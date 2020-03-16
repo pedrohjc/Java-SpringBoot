@@ -1,12 +1,15 @@
 package br.com.devdojo.endpoint;
 
 import br.com.devdojo.error.CustomErrorType;
+import br.com.devdojo.error.ResourceNotFoundException;
 import br.com.devdojo.model.Student;
 import br.com.devdojo.repository.StudentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("students")
@@ -25,16 +28,25 @@ public class StudentEndPoint {
 
     @GetMapping(path="/{id}")
     public ResponseEntity<?> getStudentById(@PathVariable("id") Long id) {
-        Student std = dao.findById(id).get();
-        if (std == null) {
-            return new ResponseEntity<>(new CustomErrorType("Student Not Found!"), HttpStatus.NOT_FOUND);
+        Student std = null;
+        try {
+             std = dao.findById(id).get();
+        }catch(NoSuchElementException err) {
+            if (std == null) {
+                throw new ResourceNotFoundException("ID not found for: " + id);
+            }
         }
-        return new ResponseEntity<>(dao, HttpStatus.OK);
+        return new ResponseEntity<>(std, HttpStatus.OK);
+    }
+
+    @GetMapping(path = "/findByName/{name}")
+    public ResponseEntity<?> findStudentsByName(@PathVariable String name){
+        return new ResponseEntity<>(dao.findByNameIgnoreCaseContaining(name), HttpStatus.OK);
     }
 
     @PostMapping
     public ResponseEntity<?> save(@RequestBody Student std) {
-        return new ResponseEntity<>(dao.save(std), HttpStatus.OK);
+        return new ResponseEntity<>(dao.save(std), HttpStatus.CREATED);
     }
 
     @DeleteMapping(path = "/{id}")
