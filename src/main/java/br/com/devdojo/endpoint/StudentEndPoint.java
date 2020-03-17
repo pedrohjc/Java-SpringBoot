@@ -26,21 +26,15 @@ public class StudentEndPoint {
         return new ResponseEntity<>(dao.findAll(), HttpStatus.OK);
     }
 
-    @GetMapping(path="/{id}")
+    @GetMapping(path = "/{id}")
     public ResponseEntity<?> getStudentById(@PathVariable("id") Long id) {
-        Student std = null;
-        try {
-             std = dao.findById(id).get();
-        }catch(NoSuchElementException err) {
-            if (std == null) {
-                throw new ResourceNotFoundException("ID not found for: " + id);
-            }
-        }
+        verifyIfStudentExists(id);
+        Student std = dao.findById(id).get();
         return new ResponseEntity<>(std, HttpStatus.OK);
     }
 
     @GetMapping(path = "/findByName/{name}")
-    public ResponseEntity<?> findStudentsByName(@PathVariable String name){
+    public ResponseEntity<?> findStudentsByName(@PathVariable String name) {
         return new ResponseEntity<>(dao.findByNameIgnoreCaseContaining(name), HttpStatus.OK);
     }
 
@@ -51,15 +45,24 @@ public class StudentEndPoint {
 
     @DeleteMapping(path = "/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id) {
+        verifyIfStudentExists(id);
         dao.deleteById(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PutMapping
     public ResponseEntity<?> update(@RequestBody Student std) {
+        verifyIfStudentExists(std.getId());
         dao.save(std);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    private void verifyIfStudentExists(Long id) {
+        try {
+            if (dao.findById(id).get() == null) { }
+        }catch(NoSuchElementException err){
+            throw new ResourceNotFoundException("ID not found for: " + id);
+        }
+    }
 }
 
