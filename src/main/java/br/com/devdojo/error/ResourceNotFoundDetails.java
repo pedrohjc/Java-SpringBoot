@@ -1,12 +1,6 @@
 package br.com.devdojo.error;
 
 public class ResourceNotFoundDetails extends ErrorDetail{
-    private String titlr;
-    private int status;
-    private String detail;
-    private long timestamp;
-    private String developerMessage;
-
     public static final class Builder {
         private String titlr;
         private int status;
