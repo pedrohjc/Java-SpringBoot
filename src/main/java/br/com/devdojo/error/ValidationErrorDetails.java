@@ -1,6 +1,6 @@
 package br.com.devdojo.error;
 
-public class ValidationErrorDetails extends ErrorDetail{
+public class ValidationErrorDetails extends ErrorDetails {
     private String field;
     private String fieldMessage;
 
@@ -63,6 +63,8 @@ public class ValidationErrorDetails extends ErrorDetail{
             validationErrorDetails.setStatus(status);
             validationErrorDetails.setDetail(detail);
             validationErrorDetails.setTitlr(titlr);
+            validationErrorDetails.field = field;
+            validationErrorDetails.fieldMessage = fieldMessage;
             return validationErrorDetails;
         }
     }
